@@ -1,0 +1,21 @@
+{
+    "id": "org.webosports.service.licenses",
+    "description": "License management service",
+    "activityTimeout": 3600,
+    "services": [ {
+        "name": "org.webosports.service.licenses",
+        "description": "License management service",
+        "commands": [
+            {
+                "name": "listLicensesForPackage",
+                "assistant": "ListLicensesForPackageAssistant",
+                "public": true
+            },
+            {
+                "name": "GetLicenseForPackage",
+                "assistant": "GetLicenseForPackageAssistant",
+                "public": true
+            }
+        ]
+    } ]
+}
