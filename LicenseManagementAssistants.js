@@ -17,17 +17,72 @@
  *
  */
 
+if(typeof require === 'undefined') {
+   require = IMPORTS.require;
+}
+
+if(typeof licensesRoot === 'undefined') {
+   licensesRoot = '/usr/share/licenses';
+}
+
+
+fs = require('fs');
+
+var ListPackagesAssistant = function() { }
 var ListLicensesForPackageAssistant = function() { }
-var GetLicenseForPackageAssistant = function() { }
+var GetLicenseTextForPackageAssistant = function() { }
+
+ListPackagesAssistant.prototype.run = function(future) {
+	
+	var contents = fs.readdirSync(licensesRoot);
+
+	var packages = [];
+
+	for (var i = 0; i < contents.length; i++) {
+	    var fileInfo = fs.statSync(licensesRoot + "/" + contents[i]);
+	    if (fileInfo.isDirectory()) {
+	        packages.push(contents[i]);
+	    } 
+	}
+	
+    future.result = {
+        "returnValue": true,
+        "packages": packages
+    };
+}
 
 ListLicensesForPackageAssistant.prototype.run = function(future) {
+	var args = this.controller.args;
+
+	var packageLicenseRoot = licensesRoot + "/" + args.package;
+	var contents = fs.readdirSync(packageLicenseRoot);
+
+	var licenses = [];
+
+	for (var i = 0; i < contents.length; i++) {
+	    var fileInfo = fs.statSync(packageLicenseRoot + "/" + contents[i]);
+	    if (fileInfo.isFile()) {
+	        licenses.push(contents[i]);
+	    } 
+	}
+
     future.result = {
         "returnValue": true,
+        "licenses": licenses
     };
 }
 
-GetLicenseForPackageAssistant.prototype.run = function(future) {
+
+GetLicenseTextForPackageAssistant.prototype.run = function(future) {
+	var args = this.controller.args;
+
+	var licenseFile = licensesRoot + "/" + args.package + "/" + args.license;
+
+	var license = fs.readFileSync(licenseFile,'utf8');
+
     future.result = {
         "returnValue": true,
+        "license": license
     };
 }
+
