@@ -7,13 +7,18 @@
         "description": "License management service",
         "commands": [
             {
+                "name": "listPackages",
+                "assistant": "ListPackagesAssistant",
+                "public": true
+            },
+            {
                 "name": "listLicensesForPackage",
                 "assistant": "ListLicensesForPackageAssistant",
                 "public": true
             },
             {
-                "name": "GetLicenseForPackage",
-                "assistant": "GetLicenseForPackageAssistant",
+                "name": "getLicenseTextForPackage",
+                "assistant": "GetLicenseTextForPackageAssistant",
                 "public": true
             }
         ]
