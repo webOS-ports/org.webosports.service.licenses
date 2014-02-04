@@ -78,7 +78,9 @@ GetLicenseTextForPackageAssistant.prototype.run = function(future) {
 
 	var licenseFile = licensesRoot + "/" + args.package + "/" + args.license;
 
-	var license = fs.readFileSync(licenseFile,'utf8');
+	// This returns a byte array. If we encode this to a string, we need to escape special characters
+	// to be able to JSON encode it. So we pass data as a byte array and covert it to a string in the client
+	var license = fs.readFileSync(licenseFile);
 
     future.result = {
         "returnValue": true,
