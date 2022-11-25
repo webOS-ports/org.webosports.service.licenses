@@ -1,6 +1,6 @@
 {
     "org.webosports.service.licenses": [
-        "settings",
-        "activities.manage"
+        "activity.operation",
+        "license-service.operation"        
     ]
 }
