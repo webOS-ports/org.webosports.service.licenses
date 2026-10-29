@@ -37,11 +37,14 @@ paths, so an error is the one Node gave the old service: an `errorCode` of
 mojoservice answered an error with no code of its own. The old service's
 bugs, which the code, tests and commits refer to by these numbers:
 
-- L1: `package` and `license` go into the path as they are given. A missing
-  one is read as "undefined" (`ENOENT ... '/usr/share/licenses/undefined'`),
-  a number or an array is made a string, and `../` leaves
-  `/usr/share/licenses`: `{"package": "../../../etc", "license": "hostname"}`
-  returns `/etc/hostname`, and any other file the service (root) can read.
+- L1: `package` and `license` went into the path as they were given. A
+  missing one was read as "undefined" (`ENOENT ...
+  '/usr/share/licenses/undefined'`), a number or an array was made a string,
+  and `../` left `/usr/share/licenses`: `{"package": "../../../etc",
+  "license": "hostname"}` returned `/etc/hostname`, as it would any other
+  file the service (root) can read. Fixed: each must be a name in its
+  directory (a string, not empty, not `.` or `..`, no `/`), or the call
+  fails with errorCode 400 and says which.
 - L2: an entry that cannot be looked at, such as a link that leads nowhere,
   failed the whole `listPackages` or `listLicensesForPackage` instead of being
   left out. Fixed: it is left out.

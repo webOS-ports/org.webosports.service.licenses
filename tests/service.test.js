@@ -145,22 +145,31 @@ describe('licenses', () => {
 			assert.strictEqual(r.returnValue, false);
 			assert.deepStrictEqual(Object.keys(r), ['errorText', 'errorCode', 'exception', 'returnValue']);
 		});
-		it('reads a missing package as "undefined", as the old service did', async () => {
-			const r = await s.ask('listLicensesForPackage', {});
-			assert.match(r.errorText, /scandir '.*\/licenses\/undefined'$/);
-		});
-		it('makes a package that is not a string a string, as the old service did', async () => {
-			assert.deepStrictEqual((await s.ask('listLicensesForPackage', {package: ['pkg-a']})).licenses,
-				['COPYING', 'bytes', 'empty', 'link-file']);
-			assert.match((await s.ask('listLicensesForPackage', {package: {a: 1}})).errorText, /\[object Object\]'$/);
+		it('L1: takes only a name for the package, and says so with 400', async () => {
+			for (const args of [{}, {package: ''}, {package: '.'}, {package: '..'}, {package: '../outside'},
+				{package: 'pkg-a/'}, {package: './pkg-a'}, {package: ['pkg-a']}, {package: 5}, {package: null},
+				{package: {a: 1}}, {package: 'pkg-a\u0000'}]) {
+				const r = noStack(await s.ask('listLicensesForPackage', args));
+				assert.deepStrictEqual(r, {
+					errorText: '"package" must be the name of a directory in ' + ROOT,
+					errorCode: 400,
+					exception: 'Error: "package" must be the name of a directory in ' + ROOT,
+					returnValue: false
+				}, JSON.stringify(args));
+			}
 		});
 		it('L2: leaves out a link that leads nowhere', async () => {
 			assert.deepStrictEqual(await s.ask('listLicensesForPackage', {package: 'broken'}),
 				{returnValue: true, licenses: ['ok']});
 		});
-		it('L1: lists a directory outside the root', async () => {
-			assert.deepStrictEqual(await s.ask('listLicensesForPackage', {package: '../outside'}),
-				{returnValue: true, licenses: ['secret']});
+		it('takes a name with dots in it', async () => {
+			fs.mkdirSync(path.join(ROOT, '..pkg.1'));
+			try {
+				assert.deepStrictEqual(await s.ask('listLicensesForPackage', {package: '..pkg.1'}),
+					{returnValue: true, licenses: []});
+			} finally {
+				fs.rmdirSync(path.join(ROOT, '..pkg.1'));
+			}
 		});
 	});
 
@@ -183,15 +192,28 @@ describe('licenses', () => {
 			assert.strictEqual(r.errorCode, -9999);
 		});
 		it('fails a file that is not there, naming the path', async () => {
-			const r = await s.ask('getLicenseTextForPackage', {package: 'pkg-a'});
+			const r = await s.ask('getLicenseTextForPackage', {package: 'pkg-a', license: 'nope'});
 			assert.strictEqual(r.errorText, 'MojoService: no errorCode supplied ENOENT: no such file or directory, open \'' +
-				ROOT + '/pkg-a/undefined\'');
+				ROOT + '/pkg-a/nope\'');
 		});
-		it('L1: reads a file outside the root', async () => {
-			assert.deepStrictEqual((await s.ask('getLicenseTextForPackage', {package: '../outside', license: 'secret'})).license,
-				bytes('secret\n'));
-			assert.deepStrictEqual((await s.ask('getLicenseTextForPackage', {package: 'pkg-a', license: '../../outside/secret'})).license,
-				bytes('secret\n'));
+		it('L1: takes only names, and reads nothing outside the root', async () => {
+			const pkg = '"package" must be the name of a directory in ' + ROOT;
+			const lic = '"license" must be the name of a file in ' + ROOT + '/pkg-a';
+			for (const [args, text] of [
+				[{package: '../outside', license: 'secret'}, pkg],
+				[{license: 'COPYING'}, pkg],
+				[{package: ['pkg-a'], license: 'COPYING'}, pkg],
+				[{package: 'pkg-a', license: '../../outside/secret'}, lic],
+				[{package: 'pkg-a'}, lic],
+				[{package: 'pkg-a', license: ''}, lic],
+				[{package: 'pkg-a', license: '..'}, lic],
+				[{package: 'pkg-a', license: 'sub/'}, lic],
+				[{package: 'pkg-a', license: ['COPYING']}, lic]]) {
+				const r = await s.ask('getLicenseTextForPackage', args);
+				assert.strictEqual(r.errorCode, 400, JSON.stringify(args));
+				assert.strictEqual(r.errorText, text, JSON.stringify(args));
+				assert.strictEqual(r.license, undefined);
+			}
 		});
 	});
 
