@@ -1,6 +1,7 @@
 {
     "org.webosports.service.licenses": [
         "activity.operation",
-        "license-service.operation"        
+        "activity.query",
+        "license-service.operation"
     ]
 }
