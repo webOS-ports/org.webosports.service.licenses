@@ -1,0 +1,10 @@
+{
+	"name": "org.webosports.service.licenses",
+	"version": "1.0.0",
+	"description": "License management service: the licenses of the installed packages",
+	"main": "service.js",
+	"private": true,
+	"engines": { "node": ">=22" },
+	"scripts": { "test": "node --test tests/*.test.js" },
+	"license": "GPL-2.0-or-later"
+}
