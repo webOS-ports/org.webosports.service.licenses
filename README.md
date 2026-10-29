@@ -82,20 +82,24 @@ on the path) and a parse of every module.
 
 Copyright and License Information
 =================================
-Unless otherwise specified, all content, including all source code files and
-documentation files in this repository are:
+The service was written for mojoservice by:
 
-Copyright (C) 2012 Simon Busch <morphis@gravedo.de>
+ Copyright (C) 2012 Simon Busch <morphis@gravedo.de>
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License version 2 as
-published by the Free Software Foundation.
+under the GNU General Public License, version 2 or (at your option) any
+later version. This Node 22 rewrite of it is:
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+ Copyright (C) 2012 Simon Busch <morphis@gravedo.de>
+ Copyright (c) 2026 Herman van Hazendonk
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+and is licensed under the GNU General Public License, version 3 or (at your
+option) any later version: see COPYING.
+
+lib/mojo.js reproduces the replies of mojoservice and Foundations, and the
+__info, __quit and __gc methods in service.js those of mojoservice; they say
+so in their headers. That code is:
+
+ Copyright (c) 2009-2012 Hewlett-Packard Development Company, L.P.
+
+licensed under the Apache License, Version 2.0, which allows it to be part
+of a GPL-3.0 work.

@@ -1,5 +1,8 @@
 // Copyright (c) 2026 Herman van Hazendonk
-// SPDX-License-Identifier: GPL-2.0-or-later
+// __info, __quit and __gc derived from mojoservice's controller_service.js,
+// Copyright 2009-2011 Hewlett-Packard Development Company, L.P., licensed
+// under the Apache License, Version 2.0.
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 'use strict';
 
