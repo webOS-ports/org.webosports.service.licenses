@@ -102,6 +102,15 @@ describe('licenses', () => {
 			assert.deepStrictEqual(r, {returnValue: false, errorCode: -9999, errorText: 'MojoService: no errorCode supplied '});
 			assert.deepStrictEqual(Object.keys(r), ['returnValue', 'errorCode', 'errorText']);
 		});
+		it('L2: leaves out a link that leads nowhere', async () => {
+			fs.symlinkSync('nowhere', path.join(ROOT, 'dangling-pkg'));
+			try {
+				assert.deepStrictEqual((await s.ask('listPackages', {})).packages,
+					['broken', 'empty-pkg', 'link-pkg', 'pkg-a', 'pkg-b']);
+			} finally {
+				fs.unlinkSync(path.join(ROOT, 'dangling-pkg'));
+			}
+		});
 		it('fails with -9999 when the root is not there', async () => {
 			const b = boot({root: path.join(base, 'none')});
 			try {
@@ -145,10 +154,9 @@ describe('licenses', () => {
 				['COPYING', 'bytes', 'empty', 'link-file']);
 			assert.match((await s.ask('listLicensesForPackage', {package: {a: 1}})).errorText, /\[object Object\]'$/);
 		});
-		it('L2: fails the whole package over one link that leads nowhere', async () => {
-			const r = await s.ask('listLicensesForPackage', {package: 'broken'});
-			assert.strictEqual(r.returnValue, false);
-			assert.match(r.errorText, /ENOENT: no such file or directory, stat '.*\/broken\/dangling'$/);
+		it('L2: leaves out a link that leads nowhere', async () => {
+			assert.deepStrictEqual(await s.ask('listLicensesForPackage', {package: 'broken'}),
+				{returnValue: true, licenses: ['ok']});
 		});
 		it('L1: lists a directory outside the root', async () => {
 			assert.deepStrictEqual(await s.ask('listLicensesForPackage', {package: '../outside'}),

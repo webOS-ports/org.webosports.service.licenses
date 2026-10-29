@@ -43,8 +43,8 @@ bugs, which the code, tests and commits refer to by these numbers:
   `/usr/share/licenses`: `{"package": "../../../etc", "license": "hostname"}`
   returns `/etc/hostname`, and any other file the service (root) can read.
 - L2: an entry that cannot be looked at, such as a link that leads nowhere,
-  fails the whole `listPackages` or `listLicensesForPackage` instead of being
-  left out.
+  failed the whole `listPackages` or `listLicensesForPackage` instead of being
+  left out. Fixed: it is left out.
 
 Not a bug, but worth knowing: a Buffer in JSON is a list of numbers, so a
 license of 18649 bytes (the kernel's `generic_GPL-2.0-with-Linux-syscall-note`)
