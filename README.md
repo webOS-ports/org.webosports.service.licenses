@@ -48,6 +48,10 @@ bugs, which the code, tests and commits refer to by these numbers:
 - L2: an entry that cannot be looked at, such as a link that leads nowhere,
   failed the whole `listPackages` or `listLicensesForPackage` instead of being
   left out. Fixed: it is left out.
+- L3: the service's client permissions (`files/sysbus/*.perm.json`) gave it
+  `activity.operation` but not `activity.query`, the API group activitymanager
+  puts `monitor` in, so every call with an `$activity` failed with "Denied
+  method call "monitor" for category "/"". Fixed: it has `activity.query`.
 
 Not a bug, but worth knowing: a Buffer in JSON is a list of numbers, so a
 license of 18649 bytes (the kernel's `generic_GPL-2.0-with-Linux-syscall-note`)
@@ -64,9 +68,9 @@ These things deliberately differ from the old service:
   `__info` and `__quit`: the installer asks a service to quit through them.
 
 A call that brings an `$activity` takes it on as mojoservice did (monitored;
-adopted when activitymanager calls back). On the qemux86-64 VM the hub does not
-let this service call activitymanager's `monitor`, so such a call fails, with
-the reply mojoservice gave: `{"errorCode": -1, "response": <the refusal>, "returnValue": false}`.
+adopted when activitymanager calls back), and answers a failed monitor with
+the reply mojoservice gave: `{"errorCode": <its code>, "response": <its reply>,
+"returnValue": false}`.
 
 Tests
 -----
